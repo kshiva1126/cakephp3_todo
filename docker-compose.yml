@@ -1,0 +1,37 @@
+version: "3"
+
+networks:
+  cakephp3_docker-backend:
+    driver: bridge
+
+volumes:
+  cakephp3_docker-database:
+    driver: local
+
+services:
+  app:
+    build:
+      context: ./dockerbuild/app
+    ports:
+      - 3000:80
+      - 4000:443
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    networks:
+      - cakephp3_docker-backend
+
+  db:
+    build:
+      context: ./dockerbuild/db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cake_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - 5000:3306
+    volumes:
+      - cakephp3_docker-database:/var/lib/mysql
+    networks:
+      - cakephp3_docker-backend
